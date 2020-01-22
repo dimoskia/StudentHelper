@@ -11,7 +11,7 @@ namespace StudentHelper
     {
         protected void Application_Start()
         {
-            Database.SetInitializer(new CoursesInitializer());
+            // Database.SetInitializer(new CoursesInitializer());
 
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);

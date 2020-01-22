@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Web.Http;
 
@@ -43,14 +44,52 @@ namespace StudentHelper.Controllers
                 Password = Convert.ToBase64String(hashBytes),
                 Salt = Convert.ToBase64String(salt),
                 Role = "user",
-                Confirmed = true,
+                Confirmed = false,
                 UserDetails = new UserDetails { FirstName = userRequest.FirstName, LastName = userRequest.LastName }
             };
 
             db.Users.Add(user);
             db.SaveChanges();
 
+            SendConfirmationEmail(user);
+
             return Ok("Account successfully created");
+        }
+
+        private void SendConfirmationEmail(User user)
+        {
+            MailMessage mailMessage = new MailMessage();
+            mailMessage.From = new MailAddress("internettehnologiiproekt@gmail.com");
+            mailMessage.To.Add(user.Email);
+            mailMessage.Subject = "StudentHelper Account Confirmation";
+            mailMessage.IsBodyHtml = true;
+            string name = user.UserDetails.FirstName + " " + user.UserDetails.LastName;
+            mailMessage.Body =
+                "<hr>" +
+                "<p></p>" +
+                "<p></p>" +
+                "<p>Hi " + name + ",</p>" +
+                "<p></p>" +
+                "<p>Thanks for creating a StudentHelper account. To continue, please confirm your email" +
+                " address   by clicking the button below</p>" +
+                "<p></p>" +
+                "<p></p>" +
+                "<a style='text-decoration: none; color: white;' href='https://www.google.com/'>" +
+                "<div style='width: 200px; text-align: center; padding: 5px 2px 5px 2px; type:button; background: rgb(0, 204, 153); border-radius: 4px;'>Confirm email address</div>" +
+                "</a>" +
+                "<p></p>" +
+                "<p></p>" +
+                "<hr>";
+
+            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);
+            smtpClient.Credentials = new System.Net.NetworkCredential()
+            {
+                UserName = "internettehnologiiproekt@gmail.com",
+                Password = "ITPassword!"
+            };
+
+            smtpClient.EnableSsl = true;
+            smtpClient.Send(mailMessage);
         }
 
         [Route("api/users/signin")]

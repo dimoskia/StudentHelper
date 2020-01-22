@@ -46,7 +46,7 @@ namespace StudentHelper.Models
                 DetailsUrl = detailsUrl,
                 Professors = proffesors,
                 Assistants = assistants,
-                Description = description;
+                Description = description
             };
         }
 
