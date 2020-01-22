@@ -66,9 +66,13 @@ namespace StudentHelper.Controllers
 
             var jsonCourse = await filesReadToProvider.Contents[0].ReadAsStringAsync();
             Course course = JsonConvert.DeserializeObject<Course>(jsonCourse, new CourseJsonConverter() { DbContext = db });
-            var imageBytes = await filesReadToProvider.Contents[1].ReadAsByteArrayAsync();
-
-            course.ImageUrl = ImageController.SaveImage(imageBytes, Request, db);
+            
+            if(filesReadToProvider.Contents.Count > 1)
+            {
+                var imageBytes = await filesReadToProvider.Contents[1].ReadAsByteArrayAsync();
+                course.ImageUrl = ImageController.SaveImage(imageBytes, Request, db);
+            }
+                      
             db.Courses.Add(course);
             db.SaveChanges();
 

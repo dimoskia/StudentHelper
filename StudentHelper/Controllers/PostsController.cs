@@ -37,7 +37,6 @@ namespace StudentHelper.Controllers
         [Route("api/Courses/{courseId}/Posts/Add")]
         public IHttpActionResult PostNewPost(int courseId, Post post)
         {
-
             Course course = db.Courses.Find(courseId);
             if (course == null)
             {
