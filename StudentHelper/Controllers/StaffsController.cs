@@ -59,7 +59,9 @@ namespace StudentHelper.Controllers
             var configuration = new MapperConfiguration(cfg => cfg.CreateMap<Staff, StaffListItem>()
                 .ForMember(dest => dest.Name, c => c.MapFrom(source => source.FirstName + " " + source.LastName))
             );
-            var allStaff = db.Staffs.ProjectTo<StaffListItem>(configuration).ToList();
+            var allStaff = db.Staffs
+                .OrderBy(x => x.FirstName + " " + x.LastName)
+                .ProjectTo<StaffListItem>(configuration).ToList();
             return Ok(allStaff);
         }
 

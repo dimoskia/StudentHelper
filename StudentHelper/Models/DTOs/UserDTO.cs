@@ -1,6 +1,6 @@
 ﻿namespace StudentHelper.Models.DTOs
 {
-    public class NewUserRequest
+    public class UserDTO
     {
         public string Email { get; set; }
         public string Password { get; set; }
