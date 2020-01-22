@@ -22,6 +22,7 @@ namespace StudentHelper.Models
             string program = item["program"].Value<string>();
             string semester = item["semester"].Value<string>();
             string detailsUrl = item["detailsUrl"].Value<string>();
+            string description = item["description"].Value<string>();
 
             List<Staff> proffesors = item["professors"]
                 .ToObject<IList<int>>()
@@ -44,7 +45,8 @@ namespace StudentHelper.Models
                 Semester = semester,
                 DetailsUrl = detailsUrl,
                 Professors = proffesors,
-                Assistants = assistants
+                Assistants = assistants,
+                Description = description;
             };
         }
 
