@@ -9,7 +9,7 @@ namespace StudentHelper.Models
         public string Role { get; set; }
         public string Salt { get; set; }
         public string Password { get; set; }
-        public bool Confirmed { get; set; }
+        public string ConfirmationCode { get; set; }
         public virtual UserDetails UserDetails { get; set; }
         public virtual ICollection<Course> Favorites { get; set; }
 

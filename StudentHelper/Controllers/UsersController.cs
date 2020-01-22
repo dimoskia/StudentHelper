@@ -39,24 +39,27 @@ namespace StudentHelper.Controllers
             Array.Copy(salt, 0, hashBytes, 0, 16);
             Array.Copy(hash, 0, hashBytes, 16, 20);
 
+            byte[] confirmationCode;
+            rngCsp.GetBytes(confirmationCode = new byte[10]);
+
             User user = new User {
                 Email = userRequest.Email,
                 Password = Convert.ToBase64String(hashBytes),
                 Salt = Convert.ToBase64String(salt),
-                Role = "user",
-                Confirmed = false,
+                Role = "unconfirmed",
+                ConfirmationCode = Convert.ToBase64String(confirmationCode),
                 UserDetails = new UserDetails { FirstName = userRequest.FirstName, LastName = userRequest.LastName }
             };
 
             db.Users.Add(user);
             db.SaveChanges();
 
-            SendConfirmationEmail(user);
+            SendConfirmationEmail(user, Request);
 
             return Ok("Account successfully created");
         }
 
-        private void SendConfirmationEmail(User user)
+        private void SendConfirmationEmail(User user, HttpRequestMessage req)
         {
             MailMessage mailMessage = new MailMessage();
             mailMessage.From = new MailAddress("internettehnologiiproekt@gmail.com");
@@ -64,6 +67,8 @@ namespace StudentHelper.Controllers
             mailMessage.Subject = "StudentHelper Account Confirmation";
             mailMessage.IsBodyHtml = true;
             string name = user.UserDetails.FirstName + " " + user.UserDetails.LastName;
+            string confirmationLink = string.Format("http://{0}:{1}/api/users/confirm?email={2}&code={3}",
+                req.RequestUri.Host, req.RequestUri.Port, user.Email, user.ConfirmationCode);
             mailMessage.Body =
                 "<hr>" +
                 "<p></p>" +
@@ -74,7 +79,7 @@ namespace StudentHelper.Controllers
                 " address   by clicking the button below</p>" +
                 "<p></p>" +
                 "<p></p>" +
-                "<a style='text-decoration: none; color: white;' href='https://www.google.com/'>" +
+                "<a style='text-decoration: none; color: white;' href='" + confirmationLink + "'>" +
                 "<div style='width: 200px; text-align: center; padding: 5px 2px 5px 2px; type:button; background: rgb(0, 204, 153); border-radius: 4px;'>Confirm email address</div>" +
                 "</a>" +
                 "<p></p>" +
@@ -90,6 +95,19 @@ namespace StudentHelper.Controllers
 
             smtpClient.EnableSsl = true;
             smtpClient.Send(mailMessage);
+        }
+
+        [Route("api/users/confirm")]
+        public IHttpActionResult GetConfirmation(string email, string code)
+        {
+            User user = db.Users.Where(u => u.Email.Equals(email)).FirstOrDefault();
+            if(user == null || !user.ConfirmationCode.Equals(code))
+            {
+                return BadRequest();
+            }
+            user.Role = "user";
+            db.SaveChanges();
+            return Redirect("http://localhost:3000/login");
         }
 
         [Route("api/users/signin")]

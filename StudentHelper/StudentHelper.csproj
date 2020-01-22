@@ -209,6 +209,14 @@
     <Compile Include="Migrations\202001221235338_addedSalt.designer.cs">
       <DependentUpon>202001221235338_addedSalt.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202001221812016_removedConfirmColumn.cs" />
+    <Compile Include="Migrations\202001221812016_removedConfirmColumn.designer.cs">
+      <DependentUpon>202001221812016_removedConfirmColumn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202001221814091_addConfirmationCodeColumn.cs" />
+    <Compile Include="Migrations\202001221814091_addConfirmationCodeColumn.designer.cs">
+      <DependentUpon>202001221814091_addConfirmationCodeColumn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Course.cs" />
@@ -318,6 +326,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202001221235338_addedSalt.resx">
       <DependentUpon>202001221235338_addedSalt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001221812016_removedConfirmColumn.resx">
+      <DependentUpon>202001221812016_removedConfirmColumn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001221814091_addConfirmationCodeColumn.resx">
+      <DependentUpon>202001221814091_addConfirmationCodeColumn.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
