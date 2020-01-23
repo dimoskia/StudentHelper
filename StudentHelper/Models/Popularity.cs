@@ -12,7 +12,6 @@ namespace StudentHelper.Models
         public int UserDetailsId { get; set; }
         [JsonIgnore]
         public virtual Course Course { get; set; }
-        [JsonIgnore]
         public virtual UserDetails UserDetails { get; set; }
         public int Votes { get; set; }
     }

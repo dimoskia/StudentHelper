@@ -30,9 +30,14 @@ namespace StudentHelper.Controllers
 
         // GET: api/Courses/Search?searchTerm=term
         [Route("api/courses/search")]
-        public IHttpActionResult GetCoursesBySearch(string searchTerm, int page = 1, int pageSize = 12)
+        public IHttpActionResult GetCoursesBySearch(string searchTerm = "", int page = 1, int pageSize = 12)
         {
-            var queryable = Course.SearchCourses(db.Courses, searchTerm);
+            IQueryable<Course> queryable = db.Courses;
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                queryable = queryable.Where(c => c.Title.ToLower().Contains(searchTerm.ToLower()));
+
+            }
             var coursesPage = Pagination.CreateMappedPage<Course, CourseCard>(
                 queryable, page, pageSize, "Title", true
             );
