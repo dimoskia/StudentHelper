@@ -25,10 +25,18 @@ namespace StudentHelper.Models
         public virtual ICollection<Post> Posts { get; set; }
         public static IQueryable<Course> FilterCourses(IQueryable<Course> courses, CourseFilter courseFilter)
         {
-            return courses.Where(c => courseFilter.Year.Contains(c.Year))
+            IQueryable<Course> result = courses.Where(c => courseFilter.Year.Contains(c.Year))
                 .Where(c => courseFilter.Program.Contains(c.Program))
                 .Where(c => courseFilter.Semester.Contains(c.Semester))
                 .Where(c => courseFilter.Type.Contains(c.Type));
+
+            if (!string.IsNullOrEmpty(courseFilter.SearchTerm))
+            {
+                result = result.Where(c => c.Title.ToLower().Contains(courseFilter.SearchTerm.ToLower()));
+
+            }
+
+            return result;
         }
         
     }

@@ -19,27 +19,11 @@ namespace StudentHelper.Controllers
         private StudentHelperContext db = new StudentHelperContext();
 
         // GET: api/Courses?page=1&pageSize=10&year=1&year=2&semester=zimski
-        public IHttpActionResult GetCourses([FromUri] CourseFilter courseFilter, int page = 1, int pageSize = 12)
+        public IHttpActionResult GetCourses([FromUri] CourseFilter courseFilter)
         {
             var queryable = Course.FilterCourses(db.Courses, courseFilter);
             var coursesPage = Pagination.CreateMappedPage<Course, CourseCard>(
-                queryable, page, pageSize, "Title", true
-            );
-            return Ok(coursesPage);
-        }
-
-        // GET: api/Courses/Search?searchTerm=term
-        [Route("api/courses/search")]
-        public IHttpActionResult GetCoursesBySearch(string searchTerm = "", int page = 1, int pageSize = 12)
-        {
-            IQueryable<Course> queryable = db.Courses;
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                queryable = queryable.Where(c => c.Title.ToLower().Contains(searchTerm.ToLower()));
-
-            }
-            var coursesPage = Pagination.CreateMappedPage<Course, CourseCard>(
-                queryable, page, pageSize, "Title", true
+                queryable, courseFilter.Page, courseFilter.PageSize, "Title", true
             );
             return Ok(coursesPage);
         }

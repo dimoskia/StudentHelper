@@ -9,6 +9,9 @@ namespace StudentHelper.Models
         public List<string> Program { get; set; } = new List<string> { "КНИ", "ПЕТ", "МТ", "КЕ", "ИКИ", "АСИ", "ПИТ" };
         public List<string> Semester { get; set; } = new List<string> { "зимски", "летен" };
         public List<string> Type { get; set; } = new List<string> { "задолжителен", "изборен" };
+        public string SearchTerm { get; set; }
+        public int Page { get; set; } = 1;
+        public int PageSize { get; set; } = 12;
 
     }
 }
