@@ -30,13 +30,6 @@ namespace StudentHelper.Models
                 .Where(c => courseFilter.Semester.Contains(c.Semester))
                 .Where(c => courseFilter.Type.Contains(c.Type));
         }
-        public static IQueryable<Course> SearchCourses(IQueryable<Course> courses, string searchTerm)
-        {
-            string lowerCased = searchTerm.ToLower();
-            return courses.Where(course => course.Title.ToLower().Contains(lowerCased) ||
-                course.Professors.Select(p => p.FirstName.ToLower() + " " + p.LastName.ToLower()).Any(name => name.Contains(lowerCased)) ||
-                course.Assistants.Select(p => p.FirstName.ToLower() + " " + p.LastName.ToLower()).Any(name => name.Contains(lowerCased)));
-        }
-
+        
     }
 }
