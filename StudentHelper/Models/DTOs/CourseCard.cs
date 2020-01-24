@@ -7,6 +7,8 @@
         public int Year { get; set; }
         public string Program { get; set; }
         public string Semester { get; set; }
+        public string Description { get; set; }
+
         public string ImageUrl { get; set; }
         
     }
