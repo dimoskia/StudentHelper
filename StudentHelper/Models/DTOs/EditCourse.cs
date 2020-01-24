@@ -9,6 +9,8 @@ namespace StudentHelper.Models.DTOs
         public string Type { get; set; }
         public int Year { get; set; }
         public string Program { get; set; }
+        public string Description { get; set; }
+
         public string Semester { get; set; }
         public string DetailsUrl { get; set; }
         public virtual List<int> ProfessorIds { get; set; }
