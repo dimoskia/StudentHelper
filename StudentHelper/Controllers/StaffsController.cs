@@ -116,6 +116,7 @@ namespace StudentHelper.Controllers
         }
 
         // POST: api/Staffs
+        [Route("api/staffs/add")]
         public async Task<IHttpActionResult> PostStaff()
         {
             if (!Request.Content.IsMimeMultipartContent())
