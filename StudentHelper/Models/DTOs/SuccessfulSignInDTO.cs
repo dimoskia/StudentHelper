@@ -4,6 +4,6 @@
     {
         public string Token { get; set; }
         public User User { get; set; }
-        public double Expiration { get; set; }
+        public long Expiration { get; set; }
     }
 }

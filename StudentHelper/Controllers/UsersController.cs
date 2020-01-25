@@ -83,12 +83,16 @@ namespace StudentHelper.Controllers
                 User user = db.Users.Where(u => u.Email.Equals(userDto.Email)).FirstOrDefault();
                 user.FavouritesIds = user.Favorites.Select(f => f.Id).ToList();
 
+                long expirationMillis = Convert.ToInt64(
+                    expiration
+                        .Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                        .TotalMilliseconds
+                );
+
                 var resp = new SuccessfulSignInDTO
                 {
                     Token = token,
-                    Expiration = expiration
-                        .Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
-                        .TotalMilliseconds,
+                    Expiration = expirationMillis,
                     User = user
                 };
 
