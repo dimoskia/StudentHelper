@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -28,7 +29,7 @@ namespace StudentHelper.Controllers
             }
             var queryable = db.Posts.Where(p => p.CourseId == courseId);
             var postsPage = Pagination.CreatePage<Post>(
-                queryable, page, pageSize, "CreatedAt", true, Request
+                queryable, page, pageSize, "CreatedAt", false, Request
             );
             return Ok(postsPage);
         }
@@ -48,6 +49,8 @@ namespace StudentHelper.Controllers
                 };
                 throw new HttpResponseException(resp);
             }
+
+            post.CreatedAt = DateTime.Now;
 
             course.Posts.Add(post);
             db.SaveChanges();
