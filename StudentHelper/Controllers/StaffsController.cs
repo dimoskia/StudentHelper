@@ -67,7 +67,7 @@ namespace StudentHelper.Controllers
 
         // PUT: api/Staffs/5
         [ResponseType(typeof(Staff))]
-        public IHttpActionResult PutStaff(int id, [FromBody] Staff staffRequest)
+        public IHttpActionResult PutStaff(int id, Staff staffRequest)
         {
             if (id != staffRequest.Id || !StaffExists(id))
             {
