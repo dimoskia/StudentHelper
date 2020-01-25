@@ -14,13 +14,12 @@ namespace JwtExample.Auth
 
         private static StudentHelperContext db = new StudentHelperContext();
         
-        public static string GenerateJWTToken(string email, int expire_in_Minutes = 60)
+        public static string GenerateJWTToken(string email, DateTime expiration)
         {
             User user = db.Users.First(x => x.Email == email);
             var symmetric_Key = Convert.FromBase64String(SecretKey);
             var token_Handler = new JwtSecurityTokenHandler();
 
-            var now = DateTime.UtcNow;
             var securitytokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -29,7 +28,7 @@ namespace JwtExample.Auth
                             new Claim(ClaimTypes.Role, user.Role)
                         }),
 
-                Expires = now.AddMinutes(Convert.ToInt32(expire_in_Minutes)),
+                Expires = expiration,
 
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(symmetric_Key), SecurityAlgorithms.HmacSha256Signature)
             };

@@ -24,7 +24,7 @@ namespace StudentHelper.Controllers
             {
                 var resp = new HttpResponseMessage(HttpStatusCode.MethodNotAllowed)
                 {
-                    Content = new StringContent("Account with the given email already exists")
+                    Content = new StringContent("Веќе постои корисник со внесената email адреса")
                 };
                 throw new HttpResponseException(resp);
             }
@@ -78,10 +78,24 @@ namespace StudentHelper.Controllers
 
             if(CheckCredentials(userDto.Email, userDto.Password))
             {
-                return Request.CreateResponse(HttpStatusCode.OK, JwtAuthManager.GenerateJWTToken(userDto.Email));
+                DateTime expiration = DateTime.UtcNow.AddHours(1);
+                string token = JwtAuthManager.GenerateJWTToken(userDto.Email, expiration);
+                User user = db.Users.Where(u => u.Email.Equals(userDto.Email)).FirstOrDefault();
+                user.FavouritesIds = user.Favorites.Select(f => f.Id).ToList();
+
+                var resp = new SuccessfulSignInDTO
+                {
+                    Token = token,
+                    Expiration = expiration
+                        .Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                        .TotalMilliseconds,
+                    User = user
+                };
+
+                return Request.CreateResponse(HttpStatusCode.OK, resp);
             }
 
-            return Request.CreateResponse(HttpStatusCode.Unauthorized, "Email or password is incorrect");
+            return Request.CreateResponse(HttpStatusCode.Unauthorized, "Внесената email адреса или лозинка е погрешна");
         }
 
         private bool CheckCredentials(string email, string password)
