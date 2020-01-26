@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using JwtExample.Auth;
 using Newtonsoft.Json;
 using StudentHelper.Data;
 using StudentHelper.Models;
@@ -14,6 +15,7 @@ using StudentHelper.Models.Pagination;
 
 namespace StudentHelper.Controllers
 {
+    [JwtAuthentication(AllowedRole ="admin")]
     public class StaffsController : ApiController
     {
         private StudentHelperContext db = new StudentHelperContext();
@@ -87,7 +89,7 @@ namespace StudentHelper.Controllers
 
         // PATCH: api/Staff/ChangeImage/5
         [Route("api/staff/changeImage/{id}")]
-        public async Task<IHttpActionResult> PatchCourse(int id)
+        public async Task<IHttpActionResult> PatchStaff(int id)
         {
             if (!StaffExists(id))
             {
