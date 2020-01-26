@@ -16,6 +16,7 @@ namespace StudentHelper.Data
         public System.Data.Entity.DbSet<Image> Images { get; set; }
         public System.Data.Entity.DbSet<Post> Posts { get; set; }
         public System.Data.Entity.DbSet<Comment> Comments { get; set; }
+        public System.Data.Entity.DbSet<UserDetails> UserDetails { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

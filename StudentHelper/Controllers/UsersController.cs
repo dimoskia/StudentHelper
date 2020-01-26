@@ -4,6 +4,7 @@ using StudentHelper.Data;
 using StudentHelper.Models;
 using StudentHelper.Models.DTOs;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -159,6 +160,30 @@ namespace StudentHelper.Controllers
             }
 
             return Request.CreateResponse(HttpStatusCode.Unauthorized, "Промената на лозинка е неуспешна, бидејќи внесовте погрешна стара лозинка");
+        }
+
+        [Route("api/users/deactivateAccount")]
+        [JwtAuthentication]
+        public HttpResponseMessage PostDeactivateAccount(UserDTO userDTO)
+        {
+            string email = JwtAuthManager.GetEmailFromRequest(Request);
+            if (CheckCredentials(email, userDTO.Password))
+            {
+                int userId = JwtAuthManager.GetUserIdFromRequest(Request);
+                User user = db.Users.Find(userId);
+
+                List<Comment> allComments = db.Comments.Where(c => c.UserDetails.UserDetailsId == userId).ToList();
+                allComments.ForEach(c => db.Comments.Remove(c));
+
+                db.UserDetails.Remove(user.UserDetails);
+                db.Users.Remove(user);
+
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.Unauthorized, "Профилот не е деактивиран бидејќи лозинката која ја внесовте е погрешна.");
         }
     }
 }
