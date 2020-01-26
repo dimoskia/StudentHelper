@@ -1,7 +1,5 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Security.Claims;
 using System.Web.Http;
 using System.Web.Http.Description;
 using JwtExample.Auth;
@@ -33,7 +31,8 @@ namespace StudentHelper.Controllers
                 throw new HttpResponseException(resp);
             }
 
-
+            int userId = JwtAuthManager.getUserIdFromRequest(Request);
+            comment.UserDetails = db.Users.Find(userId).UserDetails;
             post.Comments.Add(comment);
             db.SaveChanges();
 
