@@ -58,11 +58,23 @@ namespace StudentHelper.Controllers
             post.UserDetailsId = userId;
 
             course.Posts.Add(post);
+
+            InitPopularityIfAbsent(userId, course);
+
             db.SaveChanges();
 
             return Ok(post);
         }
-       
+
+        private void InitPopularityIfAbsent(int userId, Course course)
+        {
+            if(course.PopularityStats.Count(p => p.UserDetailsId == userId) == 0)
+            {
+                Popularity newPopularityStat = new Popularity { UserDetailsId = userId, CourseId = course.Id, Votes = 0 };
+                course.PopularityStats.Add(newPopularityStat);
+            }
+        }
+
         [Route("api/Posts/{postId}/Like")]
         public IHttpActionResult PostPostLike(int postId)
         {
@@ -78,8 +90,12 @@ namespace StudentHelper.Controllers
                 };
                 throw new HttpResponseException(resp);
             }
+            
             post.Likes++;
+            Popularity.PostLiked(post.CourseId, post.UserDetailsId, db);
+
             db.SaveChanges();
+
             return Ok();
         }
 
@@ -97,8 +113,12 @@ namespace StudentHelper.Controllers
                 };
                 throw new HttpResponseException(resp);
             }
+            
             post.Dislikes++;
+            Popularity.PostDisliked(post.CourseId, post.UserDetailsId, db);
+            
             db.SaveChanges();
+
             return Ok();
         }
 
