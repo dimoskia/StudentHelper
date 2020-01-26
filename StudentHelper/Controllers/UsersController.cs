@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace StudentHelper.Controllers
@@ -175,7 +176,15 @@ namespace StudentHelper.Controllers
                 List<Comment> allComments = db.Comments.Where(c => c.UserDetails.UserDetailsId == userId).ToList();
                 allComments.ForEach(c => db.Comments.Remove(c));
 
+                int? imageId = Image.ExtractImageId(user.UserDetails.ImageUrl);
+
+                if (imageId != null)
+                {
+                    ImageController.DeleteImage(imageId.Value, db);
+                }
+
                 db.UserDetails.Remove(user.UserDetails);
+
                 db.Users.Remove(user);
 
                 db.SaveChanges();
@@ -184,6 +193,35 @@ namespace StudentHelper.Controllers
             }
 
             return Request.CreateResponse(HttpStatusCode.Unauthorized, "Профилот не е деактивиран бидејќи лозинката која ја внесовте е погрешна.");
+        }
+
+        // PATCH: api/Users/ChangeImage
+        [Route("api/users/changeImage")]
+        [JwtAuthentication]
+        public async Task<IHttpActionResult> PatchUser()
+        {
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                return StatusCode(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            int userId = JwtAuthManager.GetUserIdFromRequest(Request);
+            UserDetails userDetails = db.UserDetails.Find(userId);
+            var filesReadToProvider = await Request.Content.ReadAsMultipartAsync();
+            var imageBytes = await filesReadToProvider.Contents[0].ReadAsByteArrayAsync();
+
+            int? oldImageId = Image.ExtractImageId(userDetails.ImageUrl);
+
+            if (oldImageId != null)
+            {
+                ImageController.DeleteImage(oldImageId.Value, db);
+            }
+
+            userDetails.ImageUrl = ImageController.SaveImage(imageBytes, Request, db);
+
+            db.SaveChanges();
+
+            return Ok(userDetails);
         }
     }
 }
