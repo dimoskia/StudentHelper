@@ -80,7 +80,7 @@ namespace StudentHelper.Controllers
 
             if(CheckCredentials(userDto.Email, userDto.Password))
             {
-                DateTime expiration = DateTime.UtcNow.AddHours(1);
+                DateTime expiration = DateTime.UtcNow.AddMinutes(1);
                 string token = JwtAuthManager.GenerateJWTToken(userDto.Email, expiration);
                 User user = db.Users.Where(u => u.Email.Equals(userDto.Email)).FirstOrDefault();
                 user.FavouritesIds = user.Favorites.Select(f => f.Id).ToList();
