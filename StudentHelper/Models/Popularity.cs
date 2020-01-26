@@ -19,16 +19,29 @@ namespace StudentHelper.Models
 
         public static void PostLiked(int courseId, int userId, StudentHelperContext db)
         {
-            Course course = db.Courses.Find(courseId);
-            Popularity popularity = course.PopularityStats.First(p => p.UserDetailsId == userId);
-            popularity.Votes = popularity.Votes + 3;
+            ChangeStats(courseId, userId, db, 3);
         }
 
         public static void PostDisliked(int courseId, int userId, StudentHelperContext db)
         {
+            ChangeStats(courseId, userId, db, -3);
+        }
+
+        public static void CommentLiked(int courseId, int userId, StudentHelperContext db)
+        {
+            ChangeStats(courseId, userId, db, 1);
+        }
+
+        public static void CommentDisliked(int courseId, int userId, StudentHelperContext db)
+        {
+            ChangeStats(courseId, userId, db, -1);
+        }
+
+        private static void ChangeStats(int courseId, int userId, StudentHelperContext db, int votes)
+        {
             Course course = db.Courses.Find(courseId);
             Popularity popularity = course.PopularityStats.First(p => p.UserDetailsId == userId);
-            popularity.Votes = popularity.Votes - 3;
+            popularity.Votes = popularity.Votes + votes;
         }
 
     }

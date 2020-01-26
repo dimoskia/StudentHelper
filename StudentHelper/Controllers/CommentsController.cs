@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -34,9 +35,21 @@ namespace StudentHelper.Controllers
             int userId = JwtAuthManager.GetUserIdFromRequest(Request);
             comment.UserDetails = db.Users.Find(userId).UserDetails;
             post.Comments.Add(comment);
+
+            InitPopularityIfAbsent(userId, post.Course);
+
             db.SaveChanges();
 
             return Ok(comment);
+        }
+
+        private void InitPopularityIfAbsent(int userId, Course course)
+        {
+            if (course.PopularityStats.Count(p => p.UserDetailsId == userId) == 0)
+            {
+                Popularity newPopularityStat = new Popularity { UserDetailsId = userId, CourseId = course.Id, Votes = 0 };
+                course.PopularityStats.Add(newPopularityStat);
+            }
         }
 
         [Route("api/Comments/{id}/Like")]
@@ -55,6 +68,9 @@ namespace StudentHelper.Controllers
                 throw new HttpResponseException(resp);
             }
             comment.Likes++;
+
+            Popularity.CommentLiked(comment.Post.CourseId, comment.UserDetails.UserDetailsId, db);
+
             db.SaveChanges();
 
             return Ok(comment);
@@ -76,6 +92,9 @@ namespace StudentHelper.Controllers
                 throw new HttpResponseException(resp);
             }
             comment.Dislikes++;
+
+            Popularity.CommentDisliked(comment.Post.CourseId, comment.UserDetails.UserDetailsId, db);
+
             db.SaveChanges();
 
             return Ok(comment);
