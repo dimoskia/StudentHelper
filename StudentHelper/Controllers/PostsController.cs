@@ -54,7 +54,7 @@ namespace StudentHelper.Controllers
             }
 
             post.CreatedAt = DateTime.Now;
-            int userId = JwtAuthManager.getUserIdFromRequest(Request);
+            int userId = JwtAuthManager.GetUserIdFromRequest(Request);
             post.UserDetailsId = userId;
 
             course.Posts.Add(post);

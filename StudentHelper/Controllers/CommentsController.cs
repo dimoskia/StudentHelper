@@ -31,7 +31,7 @@ namespace StudentHelper.Controllers
                 throw new HttpResponseException(resp);
             }
 
-            int userId = JwtAuthManager.getUserIdFromRequest(Request);
+            int userId = JwtAuthManager.GetUserIdFromRequest(Request);
             comment.UserDetails = db.Users.Find(userId).UserDetails;
             post.Comments.Add(comment);
             db.SaveChanges();

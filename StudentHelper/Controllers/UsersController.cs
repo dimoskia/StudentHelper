@@ -129,5 +129,36 @@ namespace StudentHelper.Controllers
         {
             return db.Users.Count(user => user.Email.Equals(email)) == 0;
         }
+
+        [Route("api/users/changePassword")]
+        [JwtAuthentication]
+        public HttpResponseMessage PostChangePassword(ChangePasswordDTO changePasswordDTO)
+        {
+            string email = JwtAuthManager.GetEmailFromRequest(Request);
+            if (CheckCredentials(email, changePasswordDTO.Password))
+            {
+                int userId = JwtAuthManager.GetUserIdFromRequest(Request);
+                User user = db.Users.Find(userId);
+
+                byte[] salt;
+                rngCsp.GetBytes(salt = new byte[16]);
+
+                var pdkdf2 = new Rfc2898DeriveBytes(changePasswordDTO.NewPassword, salt, 1000);
+                byte[] hash = pdkdf2.GetBytes(20);
+
+                byte[] hashBytes = new byte[36];
+                Array.Copy(salt, 0, hashBytes, 0, 16);
+                Array.Copy(hash, 0, hashBytes, 16, 20);
+
+                user.Password = Convert.ToBase64String(hashBytes);
+                user.Salt = Convert.ToBase64String(salt);
+
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.Unauthorized, "Промената на лозинка е неуспешна, бидејќи внесовте погрешна стара лозинка");
+        }
     }
 }

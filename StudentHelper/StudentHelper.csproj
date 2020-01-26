@@ -221,6 +221,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Course.cs" />
+    <Compile Include="Models\DTOs\ChangePasswordDTO.cs" />
     <Compile Include="Models\DTOs\CourseCard.cs" />
     <Compile Include="Models\DTOs\CourseFilter.cs" />
     <Compile Include="Models\DTOs\EditCourse.cs" />

@@ -72,11 +72,18 @@ namespace JwtExample.Auth
             }
         }
 
-        public static int getUserIdFromRequest(HttpRequestMessage req)
+        public static int GetUserIdFromRequest(HttpRequestMessage req)
         {
             ClaimsPrincipal principal = req.GetRequestContext().Principal as ClaimsPrincipal;
             var idString = principal.Claims.Where(c => c.Type == "UserId").Single().Value;
             return Convert.ToInt32(idString);
+        }
+
+        public static string GetEmailFromRequest(HttpRequestMessage req)
+        {
+            ClaimsPrincipal principal = req.GetRequestContext().Principal as ClaimsPrincipal;
+            var email = principal.Claims.Where(c => c.Type == ClaimTypes.Email).Single().Value;
+            return email;
         }
     }
 }

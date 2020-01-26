@@ -149,7 +149,8 @@ namespace StudentHelper.Controllers
             db.SaveChanges();
 
             return Ok(course);
-        }        
+        }  
+        
 
         private bool CourseExists(int id)
         {
