@@ -1,12 +1,16 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Web.Http;
 using System.Web.Http.Description;
+using JwtExample.Auth;
 using StudentHelper.Data;
 using StudentHelper.Models;
 
 namespace StudentHelper.Controllers
 {
+    [JwtAuthentication]
     public class CommentsController : ApiController
     {
         private StudentHelperContext db = new StudentHelperContext();
@@ -15,6 +19,7 @@ namespace StudentHelper.Controllers
         [Route("api/Posts/{postId}/Comments")]
         public IHttpActionResult PostComment(int postId, Comment comment)
         {
+
             Post post = db.Posts.Find(postId);
 
             if (post == null)
@@ -27,6 +32,7 @@ namespace StudentHelper.Controllers
                 };
                 throw new HttpResponseException(resp);
             }
+
 
             post.Comments.Add(comment);
             db.SaveChanges();

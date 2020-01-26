@@ -49,14 +49,16 @@ namespace JwtExample.Auth
         {
             string email;
             string role;
+            string userId;
             
 
-            if (ValidateToken(token, out email, out role))
+            if (ValidateToken(token, out email, out role, out userId))
             {
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Email, email),
-                    new Claim(ClaimTypes.Role, role)
+                    new Claim(ClaimTypes.Role, role),
+                    new Claim("UserId", userId)
                 };
 
                 var identity = new ClaimsIdentity(claims, "Jwt");
@@ -68,10 +70,11 @@ namespace JwtExample.Auth
             return Task.FromResult<IPrincipal>(null);
         }
 
-        private bool ValidateToken(string token, out string email, out string role)
+        private bool ValidateToken(string token, out string email, out string role, out string userId)
         {
             email = null;
             role = null;
+            userId = null;
 
             var simplePrinciple = JwtAuthManager.GetPrincipal(token);
             if (simplePrinciple == null)
@@ -83,6 +86,9 @@ namespace JwtExample.Auth
 
             if (!identity.IsAuthenticated)
                 return false;
+
+            var userIdClaim = identity.FindFirst("UserId");
+            userId = userIdClaim?.Value;
 
             var emailClaim = identity.FindFirst(ClaimTypes.Email);
             email = emailClaim?.Value;

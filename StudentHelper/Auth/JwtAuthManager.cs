@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Linq;
 using StudentHelper.Data;
 using StudentHelper.Models;
+using System.Net.Http;
 
 namespace JwtExample.Auth
 {
@@ -25,7 +26,8 @@ namespace JwtExample.Auth
                 Subject = new ClaimsIdentity(new[]
                         {
                             new Claim(ClaimTypes.Email, email),
-                            new Claim(ClaimTypes.Role, user.Role)
+                            new Claim(ClaimTypes.Role, user.Role),
+                            new Claim("UserId", user.Id.ToString())
                         }),
 
                 Expires = expiration,
@@ -68,6 +70,13 @@ namespace JwtExample.Auth
             {
                 return null;
             }
+        }
+
+        public static int getUserIdFromRequest(HttpRequestMessage req)
+        {
+            ClaimsPrincipal principal = req.GetRequestContext().Principal as ClaimsPrincipal;
+            var idString = principal.Claims.Where(c => c.Type == "UserId").Single().Value;
+            return Convert.ToInt32(idString);
         }
     }
 }

@@ -4,12 +4,14 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using JwtExample.Auth;
 using StudentHelper.Data;
 using StudentHelper.Models;
 using StudentHelper.Models.Pagination;
 
 namespace StudentHelper.Controllers
 {
+    [JwtAuthentication]
     public class PostsController : ApiController
     {
         private StudentHelperContext db = new StudentHelperContext();
@@ -39,6 +41,7 @@ namespace StudentHelper.Controllers
         public IHttpActionResult PostNewPost(int courseId, Post post)
         {
             Course course = db.Courses.Find(courseId);
+
             if (course == null)
             {
                 var resp = new HttpResponseMessage(HttpStatusCode.BadRequest)
@@ -51,6 +54,8 @@ namespace StudentHelper.Controllers
             }
 
             post.CreatedAt = DateTime.Now;
+            int userId = JwtAuthManager.getUserIdFromRequest(Request);
+            post.UserDetailsId = userId;
 
             course.Posts.Add(post);
             db.SaveChanges();

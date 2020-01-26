@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
+using JwtExample.Auth;
 using Newtonsoft.Json;
 using StudentHelper.Data;
 using StudentHelper.Models;
@@ -14,11 +15,13 @@ using StudentHelper.Models.Pagination;
 
 namespace StudentHelper.Controllers
 {
+    [JwtAuthentication(AllowedRole = "admin")]
     public class CoursesController : ApiController
     {
         private StudentHelperContext db = new StudentHelperContext();
 
         // GET: api/Courses?page=1&pageSize=10&year=1&year=2&semester=zimski
+        [JwtAuthentication(AllowedRole = "user")]
         public IHttpActionResult GetCourses([FromUri] CourseFilter courseFilter)
         {
             var queryable = Course.FilterCourses(db.Courses, courseFilter);
@@ -29,6 +32,7 @@ namespace StudentHelper.Controllers
         }
 
         // GET: api/Courses/5
+        [JwtAuthentication(AllowedRole = "user")]
         public IHttpActionResult GetCourseDetails([FromUri] int id)
         {
             Course course = db.Courses.Find(id);
