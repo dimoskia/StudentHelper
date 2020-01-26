@@ -87,6 +87,15 @@ namespace JwtExample.Auth
             if (!identity.IsAuthenticated)
                 return false;
 
+            var exp = identity.FindFirst("exp")?.Value;
+            var expMillis = Convert.ToInt64(exp) * 1000;
+            var nowMillis = DateTime.UtcNow
+                .Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                .TotalMilliseconds;
+
+            if (nowMillis > expMillis)
+                return false;
+
             var userIdClaim = identity.FindFirst("UserId");
             userId = userIdClaim?.Value;
 
