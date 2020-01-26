@@ -149,8 +149,41 @@ namespace StudentHelper.Controllers
             db.SaveChanges();
 
             return Ok(course);
-        }  
-        
+        }
+
+        // POST: api/Courses/Favourites/11
+        [Route("api/courses/favourites/{courseId}")]
+        [JwtAuthentication(AllowedRole = "user")]
+        public IHttpActionResult PostToggleFavourites(int courseId)
+        {
+            Course course = db.Courses.Find(courseId);
+
+            if (course == null)
+            {
+                var resp = new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    Content = new StringContent(string.Format("Course with ID = {0} " +
+                    "doesn't exists", courseId))
+                };
+                throw new HttpResponseException(resp);
+            }
+
+            int userId = JwtAuthManager.GetUserIdFromRequest(Request);
+            User user = db.Users.Find(userId);
+
+            if(user.Favorites.Count(c => c.Id == courseId) > 0)
+            {
+                user.Favorites.Remove(course);
+            }
+            else
+            {
+                user.Favorites.Add(course);
+            }
+
+            db.SaveChanges();
+
+            return Ok();
+        }
 
         private bool CourseExists(int id)
         {
