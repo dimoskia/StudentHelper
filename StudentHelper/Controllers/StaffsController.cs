@@ -129,9 +129,13 @@ namespace StudentHelper.Controllers
 
             var jsonStaff = await filesReadToProvider.Contents[0].ReadAsStringAsync();
             Staff staff = JsonConvert.DeserializeObject<Staff>(jsonStaff);
-            var imageBytes = await filesReadToProvider.Contents[1].ReadAsByteArrayAsync();
 
-            staff.ImageUrl = ImageController.SaveImage(imageBytes, Request, db);
+            if (filesReadToProvider.Contents.Count > 1)
+            {
+                var imageBytes = await filesReadToProvider.Contents[1].ReadAsByteArrayAsync();
+                staff.ImageUrl = ImageController.SaveImage(imageBytes, Request, db);
+            }
+
             db.Staffs.Add(staff);
             db.SaveChanges();
 
