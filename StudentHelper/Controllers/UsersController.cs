@@ -269,5 +269,17 @@ namespace StudentHelper.Controllers
             db.SaveChanges();
             return Ok(user);
         }
+
+        // PUT: api/users
+        [JwtAuthentication]
+        public IHttpActionResult PutEditUser(UserDTO userDTO)
+        {
+            int userId = JwtAuthManager.GetUserIdFromRequest(Request);
+            UserDetails userDetails = db.UserDetails.Find(userId);
+            userDetails.FirstName = userDTO.FirstName;
+            userDetails.LastName = userDTO.LastName;
+            db.SaveChanges();
+            return Ok(userDetails);
+        }
     }
 }
