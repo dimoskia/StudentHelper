@@ -25,6 +25,12 @@ namespace StudentHelper.Controllers
         public IHttpActionResult GetCourses([FromUri] CourseFilter courseFilter)
         {
             var queryable = Course.FilterCourses(db.Courses, courseFilter);
+            if(courseFilter.Favourites)
+            {
+                int userId = JwtAuthManager.GetUserIdFromRequest(Request);
+                var favouriteIds = db.Users.Find(userId).Favorites.Select(course => course.Id).ToList();
+                queryable = queryable.Where(c => favouriteIds.Contains(c.Id));
+            }
             var coursesPage = Pagination.CreateMappedPage<Course, CourseCard>(
                 queryable, courseFilter.Page, courseFilter.PageSize, "Title", true
             );
@@ -48,7 +54,6 @@ namespace StudentHelper.Controllers
             return Ok(course);
         }
 
-        // GET: api/Courses?page=1&pageSize=10&year=1&year=2&semester=zimski
         [JwtAuthentication(AllowedRole = "user")]
         [Route("api/courses/favourites")]
         public IHttpActionResult GetFavouriteCourses(int page = 1, int pageSize = 10)
