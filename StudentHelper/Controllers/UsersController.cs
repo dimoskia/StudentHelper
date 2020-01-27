@@ -3,6 +3,7 @@ using StudentHelper.Auth;
 using StudentHelper.Data;
 using StudentHelper.Models;
 using StudentHelper.Models.DTOs;
+using StudentHelper.Models.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -222,6 +223,51 @@ namespace StudentHelper.Controllers
             db.SaveChanges();
 
             return Ok(userDetails);
+        }
+
+        // GET: api/users
+        [JwtAuthentication(AllowedRole = "admin")]
+        public IHttpActionResult GetUsersPaged(int page = 1, int pageSize = 10, string searchTerm = "")
+        {
+            IQueryable<User> queryable = db.Users;
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                string lowerCased = searchTerm.ToLower();
+                queryable = queryable.Where(s =>
+                    s.UserDetails.FirstName.ToLower().Contains(lowerCased) ||
+                    s.UserDetails.LastName.ToLower().Contains(lowerCased)
+                );
+            }
+            var usersPage = Pagination.CreatePage<User>(
+                queryable, page, pageSize, "Email", true, Request
+            );
+            return Ok(usersPage);
+        }
+
+        [Route("api/users/changeRole/{userId}")]
+        [JwtAuthentication(AllowedRole = "admin")]
+        public IHttpActionResult PostChangeUserRole(int userId, [FromBody] string newRole)
+        {
+            User user = db.Users.Find(userId);
+            if(user == null)
+            {
+                var resp = new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    Content = new StringContent(string.Format("User with Id={0} does not exists.", userId))
+                };
+                throw new HttpResponseException(resp);
+            }
+            if(!newRole.Equals("admin") && !newRole.Equals("user"))
+            {
+                var resp = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent(string.Format("Cannot change user role to '{0}'", newRole))
+                };
+                throw new HttpResponseException(resp);
+            }
+            user.Role = newRole;
+            db.SaveChanges();
+            return Ok(user);
         }
     }
 }
