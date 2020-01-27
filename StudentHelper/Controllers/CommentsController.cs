@@ -14,6 +14,27 @@ namespace StudentHelper.Controllers
     {
         private StudentHelperContext db = new StudentHelperContext();
 
+        // GET: api/comments/5
+        [Route("api/comments/{postId}")]
+        public IHttpActionResult GetCommentsForPost(int postId)
+        {
+
+            Post post = db.Posts.Find(postId);
+
+            if (post == null)
+            {
+                var resp = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent(
+                        string.Format("Post with ID = {0} doesn't exist", postId)
+                    )
+                };
+                throw new HttpResponseException(resp);
+            }
+
+            return Ok(post.Comments);
+        }
+
 
         [Route("api/Posts/{postId}/Comments")]
         public IHttpActionResult PostComment(int postId, Comment comment)
