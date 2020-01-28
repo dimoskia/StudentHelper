@@ -42,38 +42,38 @@ namespace StudentHelper.Controllers
             Array.Copy(salt, 0, hashBytes, 0, 16);
             Array.Copy(hash, 0, hashBytes, 16, 20);
 
-            // byte[] confirmationCode;
-            // rngCsp.GetBytes(confirmationCode = new byte[10]);
+            byte[] confirmationCode;
+            rngCsp.GetBytes(confirmationCode = new byte[10]);
 
             User user = new User {
                 Email = userRequest.Email,
                 Password = Convert.ToBase64String(hashBytes),
                 Salt = Convert.ToBase64String(salt),
-                Role = "user",
-                // ConfirmationCode = Convert.ToBase64String(confirmationCode),
+                Role = "unconfirmed",
+                ConfirmationCode = Convert.ToBase64String(confirmationCode),
                 UserDetails = new UserDetails { FirstName = userRequest.FirstName, LastName = userRequest.LastName }
             };
 
             db.Users.Add(user);
             db.SaveChanges();
 
-            // ConfirmationMail.SendConfirmationEmail(user, Request);
+            ConfirmationMail.SendConfirmationEmail(user, Request);
 
             return Ok("Account successfully created");
         }
 
-        //[Route("api/users/confirm")]
-        //public IHttpActionResult GetConfirmation(string email, string code)
-        //{
-        //    User user = db.Users.Where(u => u.Email.Equals(email)).FirstOrDefault();
-        //    if(user == null || !user.ConfirmationCode.Equals(code))
-        //    {
-        //        return BadRequest();
-        //    }
-        //    user.Role = "user";
-        //    db.SaveChanges();
-        //    return Redirect("");
-        //}
+        [Route("api/users/confirm")]
+        public IHttpActionResult GetConfirmation(string email, string code)
+        {
+            User user = db.Users.Where(u => u.Email.Equals(email)).FirstOrDefault();
+            if(user == null || !user.ConfirmationCode.Equals(code))
+            {
+                return BadRequest();
+            }
+            user.Role = "user";
+            db.SaveChanges();
+            return Redirect("http://localhost:3000/login");
+        }
 
         [Route("api/users/signin")]
         public HttpResponseMessage PostRequestToken(UserDTO userDto)
@@ -82,7 +82,7 @@ namespace StudentHelper.Controllers
             if(CheckCredentials(userDto.Email, userDto.Password))
             {
                 DateTime expiration = DateTime.UtcNow.AddHours(1);
-                string token = JwtAuthManager.GenerateJWTToken(userDto.Email, expiration);
+                string token = JwtAuthManager.GenerateJWTToken(userDto.Email, expiration, db);
                 User user = db.Users.Where(u => u.Email.Equals(userDto.Email)).FirstOrDefault();
                 user.FavouritesIds = user.Favorites.Select(f => f.Id).ToList();
 
@@ -109,7 +109,7 @@ namespace StudentHelper.Controllers
         {
             User user = db.Users.Where(u => u.Email.Equals(email)).FirstOrDefault();
 
-            if(user == null)
+            if(user == null || user.Role.Equals("unconfirmed"))
             {
                 return false;
             }

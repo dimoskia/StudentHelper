@@ -12,10 +12,8 @@ namespace JwtExample.Auth
     public class JwtAuthManager
     {
         public const string SecretKey = "JIOBLi6eVjBpvGtWBgJzjWd2QH0sOn5tI8rIFXSHKijXWEt/3J2jFYL79DQ1vKu+EtTYgYkwTluFRDdtF41yAQ==";
-
-        private static StudentHelperContext db = new StudentHelperContext();
         
-        public static string GenerateJWTToken(string email, DateTime expiration)
+        public static string GenerateJWTToken(string email, DateTime expiration, StudentHelperContext db)
         {
             User user = db.Users.First(x => x.Email == email);
             var symmetric_Key = Convert.FromBase64String(SecretKey);
