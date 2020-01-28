@@ -1,6 +1,7 @@
 ﻿using StudentHelper.Models;
 using System.Net.Http;
 using System.Net.Mail;
+using System.Web;
 
 namespace StudentHelper.Auth
 {
@@ -15,7 +16,7 @@ namespace StudentHelper.Auth
             mailMessage.IsBodyHtml = true;
             string name = user.UserDetails.FirstName + " " + user.UserDetails.LastName;
             string confirmationLink = string.Format("http://{0}:{1}/api/users/confirm?email={2}&code={3}",
-                req.RequestUri.Host, req.RequestUri.Port, user.Email, user.ConfirmationCode);
+                req.RequestUri.Host, req.RequestUri.Port, user.Email, HttpUtility.UrlEncode(user.ConfirmationCode));
             mailMessage.Body =
                 "<hr>" +
                 "<p></p>" +
